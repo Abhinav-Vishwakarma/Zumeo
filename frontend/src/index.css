@@ -3,24 +3,221 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-gray-50 text-gray-900;
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 330 80% 60%;
+    --secondary-foreground: 210 40% 98%;
+
+    --accent: 199 89% 48%;
+    --accent-foreground: 210 40% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 240 10% 3.9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 263.4 70% 50.4%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 263.4 70% 50.4%;
   }
 }
 
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+.glassmorphism {
+  @apply bg-black/30 backdrop-blur-md border border-white/10 shadow-lg;
 }
 
-#root {
-  margin: 0 auto;
-  text-align: center;
-} 
+.neon-border {
+  @apply border border-transparent relative;
+  box-shadow: 0 0 5px theme("colors.primary.DEFAULT"), 0 0 10px theme("colors.primary.DEFAULT");
+}
+
+.neon-border-secondary {
+  @apply border border-transparent relative;
+  box-shadow: 0 0 5px theme("colors.secondary.DEFAULT"), 0 0 10px theme("colors.secondary.DEFAULT");
+}
+
+.neon-border-accent {
+  @apply border border-transparent relative;
+  box-shadow: 0 0 5px theme("colors.accent.DEFAULT"), 0 0 10px theme("colors.accent.DEFAULT");
+}
+
+.glow-text-primary {
+  text-shadow: 0 0 5px theme("colors.primary.DEFAULT"), 0 0 10px theme("colors.primary.DEFAULT");
+}
+
+.glow-text-secondary {
+  text-shadow: 0 0 5px theme("colors.secondary.DEFAULT"), 0 0 10px theme("colors.secondary.DEFAULT");
+}
+
+.glow-text-accent {
+  text-shadow: 0 0 5px theme("colors.accent.DEFAULT"), 0 0 10px theme("colors.accent.DEFAULT");
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 5px theme("colors.primary.DEFAULT"), 0 0 10px theme("colors.primary.DEFAULT");
+  }
+  to {
+    box-shadow: 0 0 10px theme("colors.primary.DEFAULT"), 0 0 20px theme("colors.primary.DEFAULT"), 0 0 30px
+      theme("colors.primary.DEFAULT");
+  }
+}
+
+/* Additional styles for professional look */
+.glass {
+  @apply bg-black/30 backdrop-blur-md border border-white/10 shadow-lg;
+}
+
+.glass-card {
+  @apply glass rounded-lg p-6 transition-all duration-300;
+}
+
+/* Button styles */
+.cyber-button {
+  @apply relative px-6 py-2 font-bold text-white rounded-md transition-all duration-300 overflow-hidden;
+  background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--secondary)));
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.cyber-button:hover {
+  @apply transform scale-105;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+}
+
+.cyber-button:active {
+  @apply transform scale-95;
+}
+
+.cyber-button-secondary {
+  @apply relative px-6 py-2 font-bold text-white rounded-md transition-all duration-300 overflow-hidden;
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--accent));
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.cyber-button-secondary:hover {
+  @apply transform scale-105;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Form elements */
+.cyber-input {
+  @apply bg-muted border border-border text-white px-4 py-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-300;
+}
+
+.cyber-input:focus {
+  @apply border-accent;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Grid layouts */
+.dashboard-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+/* Custom utility classes */
+.text-gradient {
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-gradient {
+  background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--card)));
+}
+
+.bg-gradient-accent {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+}
+
+/* Cyberpunk decorative elements */
+.cyber-line {
+  @apply h-px bg-gradient-to-r from-transparent via-accent to-transparent my-4;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--secondary));
+}
