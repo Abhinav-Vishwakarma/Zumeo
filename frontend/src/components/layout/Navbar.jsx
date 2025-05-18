@@ -33,13 +33,19 @@ const Navbar = ({ toggleSidebar }) => {
             <button
               onClick={toggleSidebar}
               className="p-2 rounded-md text-gray-400 hover:text-white focus:outline-none"
+              aria-label="Toggle sidebar"
             >
               <MenuIcon className="h-6 w-6" />
             </button>
 
-            <Link to="/dashboard" className="ml-4 flex items-center">
+            <Link to="/" className="ml-4 flex items-center">
               <span className="text-2xl font-bold text-gradient">ResumeAI</span>
             </Link>
+            {currentUser && (
+              <Link to="/dashboard" className="ml-4 text-gray-300 hover:text-white transition-colors">
+                Dashboard
+              </Link>
+            )}
           </div>
 
           <div className="flex items-center space-x-4">
@@ -62,9 +68,17 @@ const Navbar = ({ toggleSidebar }) => {
               </button>
 
               {notificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 glassmorphism rounded-lg shadow-lg py-1 z-50 border border-border">
+                <div className="absolute right-0 mt-2 w-80 bg-cyber-gray/95 backdrop-blur-md rounded-lg shadow-lg py-1 z-50 border border-border">
                   <div className="px-4 py-2 border-b border-border">
-                    <h3 className="text-lg font-medium">Notifications</h3>
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-medium">Notifications</h3>
+                      <button
+                        onClick={() => setNotificationsOpen(false)}
+                        className="text-sm text-accent hover:text-white"
+                      >
+                        Close
+                      </button>
+                    </div>
                   </div>
                   <div className="max-h-96 overflow-y-auto">
                     {notifications.length > 0 ? (
@@ -73,7 +87,7 @@ const Navbar = ({ toggleSidebar }) => {
                           key={notification.id}
                           className={`px-4 py-3 hover:bg-muted border-l-2 ${notification.read ? "border-transparent" : "border-secondary"}`}
                         >
-                          <p className="text-sm">{notification.message}</p>
+                          <p className="text-sm text-white">{notification.message}</p>
                           <p className="text-xs text-gray-400 mt-1">{notification.time}</p>
                         </div>
                       ))

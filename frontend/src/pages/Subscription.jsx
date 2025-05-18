@@ -65,6 +65,15 @@ const Subscription = () => {
   const handlePlanSelect = (planId) => {
     setSelectedPlan(planId)
     showNotification(`Selected ${planId} plan`, "info")
+
+    // Scroll to the tokens section
+    setActiveTab("tokens")
+    setTimeout(() => {
+      const tokensSection = document.getElementById("tokens-section")
+      if (tokensSection) {
+        tokensSection.scrollIntoView({ behavior: "smooth" })
+      }
+    }, 100)
   }
 
   const handleTokenPackageSelect = (packageId) => {
@@ -196,7 +205,7 @@ const Subscription = () => {
         )}
 
         {activeTab === "tokens" && (
-          <div>
+          <div id="tokens-section">
             <div className="mb-6">
               <h2 className="text-xl font-bold mb-2">Purchase Tokens</h2>
               <p className="text-gray-300">

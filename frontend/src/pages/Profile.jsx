@@ -38,6 +38,7 @@ const Profile = () => {
     company: "",
     position: "",
     bio: "",
+    avatar: currentUser?.avatar || "",
   })
   const [activities, setActivities] = useState([])
   const [savedResumes, setSavedResumes] = useState([])
@@ -57,6 +58,7 @@ const Profile = () => {
         position: "Senior Software Engineer",
         bio: "Experienced software engineer with a passion for building innovative solutions. Specialized in full-stack development with expertise in React, Node.js, and cloud technologies.",
         joinedDate: "January 2023",
+        avatar: currentUser?.avatar || "https://i.pravatar.cc/150?u=user",
       }
 
       setProfileData(mockProfileData)
@@ -142,7 +144,15 @@ const Profile = () => {
     // Simulate API call
     setLoading(true)
     setTimeout(() => {
-      setProfileData(formData)
+      const updatedProfile = { ...formData }
+
+      // Update the current user in localStorage to reflect the avatar change
+      if (currentUser && formData.avatar) {
+        const updatedUser = { ...currentUser, avatar: formData.avatar }
+        localStorage.setItem("user", JSON.stringify(updatedUser))
+      }
+
+      setProfileData(updatedProfile)
       setEditing(false)
       setLoading(false)
       showNotification("Profile updated successfully", "success")
@@ -205,17 +215,39 @@ const Profile = () => {
               <div className="md:w-1/3 mb-6 md:mb-0 flex flex-col items-center">
                 <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-electric-blue mb-4">
                   <img
-                    src={currentUser?.avatar || "https://i.pravatar.cc/150?u=user"}
+                    src={formData?.avatar || "https://i.pravatar.cc/150?u=user"}
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
                 </div>
 
                 {editing && (
-                  <button className="cyber-button-secondary flex items-center text-sm px-3 py-1.5 mt-2">
+                  <label
+                    htmlFor="photo-upload"
+                    className="cyber-button-secondary flex items-center text-sm px-3 py-1.5 mt-2 cursor-pointer"
+                  >
                     <Upload className="mr-1 h-4 w-4" />
                     Change Photo
-                  </button>
+                    <input
+                      id="photo-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          const reader = new FileReader()
+                          reader.onload = (event) => {
+                            setFormData({
+                              ...formData,
+                              avatar: event.target?.result,
+                            })
+                            showNotification("Profile photo updated. Save changes to apply.", "info")
+                          }
+                          reader.readAsDataURL(e.target.files[0])
+                        }
+                      }}
+                    />
+                  </label>
                 )}
 
                 <p className="text-sm text-gray-400 mt-4">Member since {profileData.joinedDate}</p>

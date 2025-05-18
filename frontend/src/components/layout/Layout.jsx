@@ -42,7 +42,7 @@ const Layout = () => {
 
   // Handle sidebar toggle
   const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen)
+    setSidebarOpen((prevState) => !prevState)
   }
 
   // Handle responsive sidebar
