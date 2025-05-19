@@ -136,7 +136,7 @@ const Sidebar = ({ isOpen }) => {
                 }
               >
                 <AlertTriangle className="mr-3 h-5 w-5" />
-                <span>Fake Detector</span>
+                <span>Fake Resume Detector</span>
               </NavLink>
             </div>
           )}

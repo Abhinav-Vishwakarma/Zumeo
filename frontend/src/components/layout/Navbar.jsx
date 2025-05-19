@@ -39,7 +39,7 @@ const Navbar = ({ toggleSidebar }) => {
             </button>
 
             <Link to="/" className="ml-4 flex items-center">
-              <span className="text-2xl font-bold text-gradient">ResumeAI</span>
+              <span className="text-2xl font-bold text-gradient">Zumeo</span>
             </Link>
             {currentUser && (
               <Link to="/dashboard" className="ml-4 text-gray-300 hover:text-white transition-colors">

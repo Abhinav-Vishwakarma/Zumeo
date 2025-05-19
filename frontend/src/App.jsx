@@ -38,7 +38,7 @@ function App() {
       <div className="h-screen w-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="w-24 h-24 border-t-4 border-b-4 border-primary rounded-full animate-spin mx-auto"></div>
-          <h2 className="mt-4 text-2xl font-bold text-secondary animate-pulse">Loading AI Resume Platform...</h2>
+          <h2 className="mt-4 text-2xl font-bold text-secondary animate-pulse">Loading Zumeo AI Resume...</h2>
         </div>
       </div>
     )

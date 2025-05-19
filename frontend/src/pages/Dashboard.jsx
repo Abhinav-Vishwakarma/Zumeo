@@ -76,7 +76,7 @@ const Dashboard = () => {
       icon: AlertTriangle,
       path: "/fake-detector",
       tokenCost: 2,
-      disabled: true,
+      disabled: false,
     },
   ]
 
@@ -98,7 +98,7 @@ const Dashboard = () => {
 
       {/* Stats section */}
       <div>
-        <h2 className="text-xl font-bold mb-4">Your Stats</h2>
+        <h2 className="text-xl font-bold mb-4">Your Statics</h2>
 
         {loading ? (
           <div className="dashboard-grid">

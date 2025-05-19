@@ -31,7 +31,7 @@ export default function Home() {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Backend Status</h2>
             {backendStatus ? (
               <div className="bg-green-50 p-4 rounded-md">
-                <h3 className="font-medium text-green-800 mb-2">Backend is Running! 🚀</h3>
+                <h3 className="font-medium text-green-800 mb-2">Backend is Running!</h3>
                 <div className="space-y-2">
                   <p className="text-green-700">Message: {backendStatus.message}</p>
                   <p className="text-green-700">App Name: {backendStatus.app_name}</p>

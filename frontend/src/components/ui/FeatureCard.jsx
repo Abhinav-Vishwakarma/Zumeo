@@ -6,7 +6,7 @@ const FeatureCard = ({ icon: Icon, title, description, path, tokenCost, disabled
     <div className={`glass-card relative ${disabled ? "opacity-70" : ""}`}>
       {disabled && (
         <div className="absolute inset-0 flex items-center justify-center bg-cyber-black bg-opacity-80 rounded-lg z-10">
-          <span className="text-neon-pink font-bold">Coming Soon</span>
+          <span className="text-neon-pink font-bold">Coming Soon!</span>
         </div>
       )}
 

@@ -129,7 +129,7 @@ const Subscription = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold mb-2">Subscription & Tokens</h1>
-          <p className="text-gray-300">Manage your subscription and purchase tokens</p>
+          <p className="text-gray-300">Manage your subscription and purchase Tokens</p>
         </div>
 
         <TokenDisplay />
@@ -370,7 +370,7 @@ const Subscription = () => {
                 </div>
 
                 <p className="text-gray-300 mb-4">
-                  Invite friends to join ResumeAI. You'll earn 5 tokens for each friend who signs up.
+                 Share the Zumeo experience! Invite your friends to join, and for every 5 sign-ups, you'll earn 10 tokens. Start earning now!
                 </p>
 
                 <form onSubmit={handleReferral} className="space-y-4">

@@ -58,7 +58,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-cyber-black py-12 px-4 sm:px-6 lg:px-8 cyber-dots">
       <div className="max-w-md w-full space-y-8 glass-card">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gradient">ResumeAI</h1>
+          <h1 className="text-3xl font-bold text-gradient">Zumeo</h1>
           <h2 className="mt-6 text-2xl font-bold text-white">Sign in to your account</h2>
           <p className="mt-2 text-sm text-gray-400">
             Or{" "}
