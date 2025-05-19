@@ -36,8 +36,8 @@ const Register = () => {
       return
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters")
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters")
       return
     }
 
@@ -70,7 +70,7 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center bg-cyber-black py-12 px-4 sm:px-6 lg:px-8 cyber-dots">
       <div className="max-w-md w-full space-y-8 glass-card">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gradient">ResumeAI</h1>
+          <h1 className="text-3xl font-bold text-gradient">Zumeo</h1>
           <h2 className="mt-6 text-2xl font-bold text-white">Create your account</h2>
           <p className="mt-2 text-sm text-gray-400">
             Or{" "}
@@ -146,7 +146,7 @@ const Register = () => {
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-              <p className="mt-1 text-xs text-gray-400">Password must be at least 6 characters</p>
+              <p className="mt-1 text-xs text-gray-400">Password must be at least 8 characters</p>
             </div>
 
             <div>

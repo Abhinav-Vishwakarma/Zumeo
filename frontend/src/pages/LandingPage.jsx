@@ -30,7 +30,7 @@ const LandingPage = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Link to="/" className="flex items-center">
-                <span className="text-2xl font-bold text-gradient">ResumeAI</span>
+                <span className="text-2xl font-bold text-gradient">Zumeo</span>
               </Link>
             </div>
 
@@ -241,7 +241,7 @@ const LandingPage = () => {
               <h3 className="text-xl font-bold mb-3">Roadmap Generator</h3>
               <p className="text-gray-300 mb-4">
                 Create personalized career roadmaps based on your goals. Get step-by-step guidance on skills to develop
-                and milestones to achieve.
+                and milestones to achieve your target.
               </p>
               <Link to="/register" className="text-accent hover:text-white flex items-center text-sm">
                 Learn more <ArrowRight className="ml-1 h-4 w-4" />
@@ -254,7 +254,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-bold mb-3">Business Connect</h3>
               <p className="text-gray-300 mb-4">
-                Connect with recruiters and businesses looking for talent. Find job opportunities that match your skills
+                Connect with recruiters and businesses looking for talent. Find job opportunities that match with your skills
                 and career aspirations.
               </p>
               <Link to="/register" className="text-accent hover:text-white flex items-center text-sm">
@@ -283,7 +283,7 @@ const LandingPage = () => {
       <section className="py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">How ResumeAI Works</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">How Zumeo Works</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Our platform simplifies the process of creating professional resumes and advancing your career
             </p>
@@ -457,7 +457,7 @@ const LandingPage = () => {
                 </div>
               </div>
               <p className="text-gray-300">
-                "ResumeAI helped me optimize my resume for ATS systems, and I started getting more interview calls
+                "Zumeo helped me optimize my resume for ATS systems, and I started getting more interview calls
                 immediately. The roadmap feature also gave me clarity on my career path."
               </p>
             </div>
@@ -473,7 +473,7 @@ const LandingPage = () => {
                 </div>
               </div>
               <p className="text-gray-300">
-                "The AI Resume Builder saved me hours of work. It generated a professional resume that highlighted my
+                "The Zumeo - AI Resume Builder saved me hours of work. It generated a professional resume that highlighted my
                 skills perfectly. I landed my dream job within a month!"
               </p>
             </div>
@@ -502,7 +502,7 @@ const LandingPage = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
-            <p className="text-xl text-gray-300">Find answers to common questions about ResumeAI</p>
+            <p className="text-xl text-gray-300">Find answers to common questions about Zumeo</p>
           </div>
 
           <div className="space-y-6">
@@ -532,9 +532,9 @@ const LandingPage = () => {
             </div>
 
             <div className="glassmorphism rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-2">How accurate is the AI Resume Builder?</h3>
+              <h3 className="text-xl font-bold mb-2">How accurate is the Zumeo?</h3>
               <p className="text-gray-300">
-                Our AI Resume Builder uses advanced machine learning algorithms trained on millions of successful
+                Our Zumeo uses advanced machine learning algorithms trained on millions of successful
                 resumes. While it provides high-quality content, we recommend reviewing and personalizing the generated
                 content to ensure it accurately represents your experience and skills.
               </p>
@@ -551,7 +551,7 @@ const LandingPage = () => {
           <div className="glassmorphism rounded-xl p-12 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Advance Your Career?</h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join thousands of professionals who have transformed their careers with ResumeAI's powerful tools.
+              Join thousands of professionals who have transformed their careers with Zumeo's powerful tools.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link to="/register" className="cyber-button flex items-center justify-center">
@@ -572,7 +572,7 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <Link to="/" className="flex items-center">
-                <span className="text-2xl font-bold text-gradient">ResumeAI</span>
+                <span className="text-2xl font-bold text-gradient">Zumeo</span>
               </Link>
               <p className="mt-4 text-gray-400">
                 Advanced AI tools to help you build the perfect resume and advance your career.
@@ -654,7 +654,7 @@ const LandingPage = () => {
           </div>
 
           <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400">© {new Date().getFullYear()} ResumeAI. All rights reserved.</p>
+            <p className="text-gray-400">© {new Date().getFullYear()} Zumeo. All rights reserved.</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-gray-400 hover:text-white">
                 <span className="sr-only">Twitter</span>
