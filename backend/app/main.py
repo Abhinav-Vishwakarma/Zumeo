@@ -1,37 +1,56 @@
-from fastapi import FastAPI
-from .routes.api import router
-from .middleware.logging import LoggingMiddleware
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
+from app.config import settings
+from app.dependencies import init_db
+from app.auth.router import router as auth_router
+from app.routers.users import router as users_router
+from app.routers.resumes import router as resumes_router
+from app.routers.subscriptions import router as subscriptions_router
+from app.routers.tokens import router as tokens_router
+from app.routers.resume_checker import router as resume_checker_router
+from app.routers.resume_extractor import router as resume_extractor_router
+from app.routers.resume_builder import router as resume_builder_router
+from app.routers.roadmap import router as roadmap_router
+from app.routers.fake_detector import router as fake_detector_router
+from app.routers.business_connect import router as business_connect_router
 
 app = FastAPI(
-    title=os.getenv("APP_NAME", "FastAPI Backend"),
-    version=os.getenv("API_VERSION", "v1")
+    title=settings.APP_NAME,
+    description="API for ResumeAI platform",
+    version="1.0.0"
 )
 
-# Add CORS middleware
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=[settings.FRONTEND_URL],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Add logging middleware
-app.add_middleware(LoggingMiddleware)
+# Initialize database on startup
+@app.on_event("startup")
+async def startup_db_client():
+    await init_db()
 
-# Include routes
-app.include_router(router, prefix="/api")
+# Include routers
+app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
+app.include_router(users_router, prefix=settings.API_V1_PREFIX)
+app.include_router(resumes_router, prefix=settings.API_V1_PREFIX)
+app.include_router(subscriptions_router, prefix=settings.API_V1_PREFIX)
+app.include_router(tokens_router, prefix=settings.API_V1_PREFIX)
+app.include_router(resume_checker_router, prefix=settings.API_V1_PREFIX)
+app.include_router(resume_extractor_router, prefix=settings.API_V1_PREFIX)
+app.include_router(resume_builder_router, prefix=settings.API_V1_PREFIX)
+app.include_router(roadmap_router, prefix=settings.API_V1_PREFIX)
+app.include_router(fake_detector_router, prefix=settings.API_V1_PREFIX)
+app.include_router(business_connect_router, prefix=settings.API_V1_PREFIX)
 
 @app.get("/")
-def read_root():
-    return {
-        "message": "Hello World from FastAPI!",
-        "app_name": os.getenv("APP_NAME", "FastAPI Backend"),
-        "version": os.getenv("API_VERSION", "v1")
-    } 
+async def root():
+    return {"message": "Welcome to ResumeAI API"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}

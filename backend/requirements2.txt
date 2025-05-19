@@ -1,0 +1,13 @@
+motor==3.3.2         # Async MongoDB driver
+pymongo[srv]==4.6.1   # For ObjectId and DNS seedlist connection
+python-jose[cryptography]==3.3.0 # For JWTs
+passlib[bcrypt]==1.7.4        # For password hashing (even if using Google Auth, good for future)
+google-auth==2.23.3
+google-auth-oauthlib==1.1.0
+google-api-python-client==2.106.0 # For more complex Google API interactions if needed
+PyMuPDF==1.23.21      # For PDF processing (fitz)
+google-generativeai==0.4.0 # For Gemini
+aiofiles==23.2.1      # For async file operations
+python-multipart==0.0.6 # For form data (file uploads)
+bson==0.5.10          # For ObjectId with Pydantic v1
+email_validator==2.1.0.post1 # For email validation in Pydantic
