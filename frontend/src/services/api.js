@@ -2,7 +2,7 @@ import axios from "axios"
 
 // Create axios instance with base URL
 export const api = axios.create({
-  baseURL: "http://localhost:8000" || "https://zumeo-production.up.railway.app/", // Change this to your backend URL
+  baseURL: "https://zumeo-production.up.railway.app", // Change this to your backend URL
   headers: {
     "Content-Type": "application/json",
   },
