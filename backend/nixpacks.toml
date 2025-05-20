@@ -1,5 +1,8 @@
 build = "pip install -r requirements.txt"
 
+[phases.setup]
+pythonVersion = "3.11.0"
+
 [start]
 cmd = "uvicorn main:app --host 0.0.0.0 --port $PORT"
 watchPatterns = ["*.py"]
