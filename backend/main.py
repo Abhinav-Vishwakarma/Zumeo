@@ -343,6 +343,7 @@ app = FastAPI()
 # Add this middleware to allow cross-origin requests from your frontend
 # In a production environment, you should replace "*" with the actual origin(s) of your frontend
 origins = [
+    "*",
     "http://localhost", # Add your frontend origin(s) here
     "http://localhost:3000", # Example: if your frontend runs on port 3000
     # Add other origins as needed, e.g., your production frontend URL
