@@ -1,2 +1,5 @@
-# Railway configuration file
-PORT=8000
+{
+  "variables": {
+    "PORT": "8000"
+  }
+}
