@@ -18,6 +18,7 @@ from jose import JWTError, jwt # For JWT handling
 import fitz # PyMuPDF
 import google.generativeai as genai # Google Gemini API
 from bson import ObjectId # To work with MongoDB ObjectIds
+from fastapi.middleware.cors import CORSMiddleware # Import CORSMiddleware
 
 # Load environment variables from .env file
 load_dotenv()
@@ -337,6 +338,24 @@ class CreditBalanceResponse(BaseModel):
 
 # --- FastAPI Application ---
 app = FastAPI()
+
+# --- CORS Middleware ---
+# Add this middleware to allow cross-origin requests from your frontend
+# In a production environment, you should replace "*" with the actual origin(s) of your frontend
+origins = [
+    "http://localhost", # Add your frontend origin(s) here
+    "http://localhost:3000", # Example: if your frontend runs on port 3000
+    # Add other origins as needed, e.g., your production frontend URL
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins, # List of origins that are allowed to make requests
+    allow_credentials=True, # Allow cookies and authorization headers
+    allow_methods=["*"], # Allow all HTTP methods (GET, POST, PUT, DELETE, OPTIONS, etc.)
+    allow_headers=["*"], # Allow all headers, including Authorization
+)
+
 
 # Lifespan events to connect and close MongoDB
 @app.on_event("startup")
@@ -822,6 +841,7 @@ async def check_resume_ats(
 
         # Check if the file exists on the server
         if not os.path.exists(file_path):
+             # If file is missing but metadata exists, log a warning
              print(f"Warning: File not found for resume_id {resume_id} at path {file_path} during ATS check attempt.")
              raise HTTPException(status_code=500, detail="Resume file not found on the server.")
 
@@ -884,6 +904,8 @@ async def check_resume_ats(
             response = model.generate_content(prompt)
         except Exception as e:
              print(f"Error calling Gemini API for ATS check: {e}")
+             # If Gemini fails AFTER deducting credits, you might consider refunding credits.
+             # This adds complexity (e.g., what if refund fails?). For simplicity, we don't refund here.
              raise HTTPException(status_code=500, detail=f"Error calling Gemini API: {e}")
 
         # Check if the response contains text and attempt to parse it as JSON

@@ -1,44 +1,37 @@
 "use client"
 
-import { createContext, useState, useContext, useEffect } from "react"
+import { createContext, useContext, useState, useEffect } from "react"
 
 const ThemeContext = createContext()
 
-export const useTheme = () => useContext(ThemeContext)
-
-export const ThemeProvider = ({ children }) => {
+export function ThemeProvider({ children }) {
   const [darkMode, setDarkMode] = useState(true) // Default to dark mode
 
-  // Load theme preference from localStorage on initial load
   useEffect(() => {
+    // Check if user has a theme preference in localStorage
     const savedTheme = localStorage.getItem("theme")
     if (savedTheme) {
       setDarkMode(savedTheme === "dark")
+    } else {
+      // Check if user prefers dark mode at OS level
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+      setDarkMode(prefersDark)
     }
   }, [])
 
-  // Save theme preference to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem("theme", darkMode ? "dark" : "light")
-
-    // Apply theme to document
-    if (darkMode) {
-      document.documentElement.classList.add("dark-theme")
-      document.documentElement.classList.remove("light-theme")
-    } else {
-      document.documentElement.classList.add("light-theme")
-      document.documentElement.classList.remove("dark-theme")
-    }
-  }, [darkMode])
-
   const toggleTheme = () => {
-    setDarkMode((prev) => !prev)
+    const newMode = !darkMode
+    setDarkMode(newMode)
+    localStorage.setItem("theme", newMode ? "dark" : "light")
   }
 
-  const value = {
-    darkMode,
-    toggleTheme,
-  }
+  return <ThemeContext.Provider value={{ darkMode, toggleTheme }}>{children}</ThemeContext.Provider>
+}
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+export function useTheme() {
+  const context = useContext(ThemeContext)
+  if (context === undefined) {
+    throw new Error("useTheme must be used within a ThemeProvider")
+  }
+  return context
 }

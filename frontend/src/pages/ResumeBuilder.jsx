@@ -1,90 +1,62 @@
 "use client"
 
 import { useState } from "react"
-import { PenTool, Download, ArrowRight, ArrowLeft } from "lucide-react"
-import { useToken } from "../contexts/TokenContext"
-import { useNotification } from "../contexts/NotificationContext"
-import TokenDisplay from "../components/ui/TokenDisplay"
+import { Loader2, AlertCircle, Plus, Trash2, Download } from "lucide-react"
+import DashboardLayout from "../components/DashboardLayout"
+import { useAuth } from "../contexts/AuthContext"
 
 const ResumeBuilder = () => {
-  const { tokens, useTokens } = useToken()
-  const { showNotification } = useNotification()
-
-  const [step, setStep] = useState(1)
-  const [generating, setGenerating] = useState(false)
-  const [preview, setPreview] = useState(false)
+  const { credits } = useAuth()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [activeTab, setActiveTab] = useState("personal")
   const [resumeData, setResumeData] = useState({
-    personalInfo: {
+    personal: {
       name: "",
       email: "",
       phone: "",
-      location: "",
+      address: "",
       linkedin: "",
+      website: "",
     },
-    objective: "",
-    skills: "",
-    experience: [
-      {
-        title: "",
-        company: "",
-        location: "",
-        startDate: "",
-        endDate: "",
-        description: "",
-      },
-    ],
-    education: [
-      {
-        degree: "",
-        institution: "",
-        location: "",
-        startDate: "",
-        endDate: "",
-      },
-    ],
-    projects: [
-      {
-        name: "",
-        description: "",
-        technologies: "",
-      },
-    ],
+    summary: "",
+    experience: [{ title: "", company: "", location: "", startDate: "", endDate: "", current: false, description: "" }],
+    education: [{ degree: "", institution: "", location: "", startDate: "", endDate: "", description: "" }],
+    skills: [""],
   })
 
-  // Handle input change for personal info
-  const handlePersonalInfoChange = (e) => {
+  const handlePersonalChange = (e) => {
     const { name, value } = e.target
     setResumeData({
       ...resumeData,
-      personalInfo: {
-        ...resumeData.personalInfo,
+      personal: {
+        ...resumeData.personal,
         [name]: value,
       },
     })
   }
 
-  // Handle input change for objective
-  const handleObjectiveChange = (e) => {
+  const handleSummaryChange = (e) => {
     setResumeData({
       ...resumeData,
-      objective: e.target.value,
+      summary: e.target.value,
     })
   }
 
-  // Handle input change for skills
-  const handleSkillsChange = (e) => {
-    setResumeData({
-      ...resumeData,
-      skills: e.target.value,
-    })
-  }
-
-  // Handle input change for experience items
   const handleExperienceChange = (index, field, value) => {
     const updatedExperience = [...resumeData.experience]
-    updatedExperience[index] = {
-      ...updatedExperience[index],
-      [field]: value,
+
+    if (field === "current") {
+      updatedExperience[index] = {
+        ...updatedExperience[index],
+        [field]: !updatedExperience[index].current,
+        endDate: !updatedExperience[index].current ? "" : updatedExperience[index].endDate,
+      }
+    } else {
+      updatedExperience[index] = {
+        ...updatedExperience[index],
+        [field]: value,
+      }
     }
 
     setResumeData({
@@ -93,774 +65,481 @@ const ResumeBuilder = () => {
     })
   }
 
-  // Add new experience item
   const addExperience = () => {
     setResumeData({
       ...resumeData,
       experience: [
         ...resumeData.experience,
-        {
-          title: "",
-          company: "",
-          location: "",
-          startDate: "",
-          endDate: "",
-          description: "",
-        },
+        { title: "", company: "", location: "", startDate: "", endDate: "", current: false, description: "" },
       ],
     })
   }
 
-  // Remove experience item
   const removeExperience = (index) => {
-    if (resumeData.experience.length === 1) return
-
-    const updatedExperience = resumeData.experience.filter((_, i) => i !== index)
+    const updatedExperience = [...resumeData.experience]
+    updatedExperience.splice(index, 1)
     setResumeData({
       ...resumeData,
       experience: updatedExperience,
     })
   }
 
-  // Handle input change for education items
   const handleEducationChange = (index, field, value) => {
     const updatedEducation = [...resumeData.education]
     updatedEducation[index] = {
       ...updatedEducation[index],
       [field]: value,
     }
-
     setResumeData({
       ...resumeData,
       education: updatedEducation,
     })
   }
 
-  // Add new education item
   const addEducation = () => {
     setResumeData({
       ...resumeData,
       education: [
         ...resumeData.education,
-        {
-          degree: "",
-          institution: "",
-          location: "",
-          startDate: "",
-          endDate: "",
-        },
+        { degree: "", institution: "", location: "", startDate: "", endDate: "", description: "" },
       ],
     })
   }
 
-  // Remove education item
   const removeEducation = (index) => {
-    if (resumeData.education.length === 1) return
-
-    const updatedEducation = resumeData.education.filter((_, i) => i !== index)
+    const updatedEducation = [...resumeData.education]
+    updatedEducation.splice(index, 1)
     setResumeData({
       ...resumeData,
       education: updatedEducation,
     })
   }
 
-  // Handle input change for project items
-  const handleProjectChange = (index, field, value) => {
-    const updatedProjects = [...resumeData.projects]
-    updatedProjects[index] = {
-      ...updatedProjects[index],
-      [field]: value,
-    }
-
+  const handleSkillChange = (index, value) => {
+    const updatedSkills = [...resumeData.skills]
+    updatedSkills[index] = value
     setResumeData({
       ...resumeData,
-      projects: updatedProjects,
+      skills: updatedSkills,
     })
   }
 
-  // Add new project item
-  const addProject = () => {
+  const addSkill = () => {
     setResumeData({
       ...resumeData,
-      projects: [
-        ...resumeData.projects,
-        {
-          name: "",
-          description: "",
-          technologies: "",
-        },
-      ],
+      skills: [...resumeData.skills, ""],
     })
   }
 
-  // Remove project item
-  const removeProject = (index) => {
-    if (resumeData.projects.length === 1) return
-
-    const updatedProjects = resumeData.projects.filter((_, i) => i !== index)
+  const removeSkill = (index) => {
+    const updatedSkills = [...resumeData.skills]
+    updatedSkills.splice(index, 1)
     setResumeData({
       ...resumeData,
-      projects: updatedProjects,
+      skills: updatedSkills,
     })
   }
 
-  // Handle next step
-  const handleNextStep = () => {
-    setStep(step + 1)
+  const handleGenerateResume = () => {
+    // This would typically call an API to generate the resume
+    // For now, we'll just simulate loading
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+      // Here you would handle the response from the API
+    }, 2000)
   }
 
-  // Handle previous step
-  const handlePrevStep = () => {
-    setStep(step - 1)
-  }
-
-  // Handle AI generation
-
-  // Handle download as PDF
-  const handleDownload = () => {
-    showNotification("Resume downloaded as PDF", "success")
-  }
-
-  // Render form based on current step
-  const renderForm = () => {
-    switch (step) {
-      case 1:
-        return (
-          <div className="space-y-6">
-            <h2 className="text-xl font-bold text-electric-blue">Personal Information</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={resumeData.personalInfo.name}
-                  onChange={handlePersonalInfoChange}
-                  className="cyber-input"
-                  placeholder="e.g. John Doe"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={resumeData.personalInfo.email}
-                  onChange={handlePersonalInfoChange}
-                  className="cyber-input"
-                  placeholder="e.g. john.doe@example.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Phone</label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={resumeData.personalInfo.phone}
-                  onChange={handlePersonalInfoChange}
-                  className="cyber-input"
-                  placeholder="e.g. (123) 456-7890"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Location</label>
-                <input
-                  type="text"
-                  name="location"
-                  value={resumeData.personalInfo.location}
-                  onChange={handlePersonalInfoChange}
-                  className="cyber-input"
-                  placeholder="e.g. San Francisco, CA"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-300 mb-1">LinkedIn URL</label>
-                <input
-                  type="text"
-                  name="linkedin"
-                  value={resumeData.personalInfo.linkedin}
-                  onChange={handlePersonalInfoChange}
-                  className="cyber-input"
-                  placeholder="e.g. linkedin.com/in/johndoe"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Professional Summary / Objective</label>
-              <textarea
-                rows={4}
-                value={resumeData.objective}
-                onChange={handleObjectiveChange}
-                className="cyber-input"
-                placeholder="Write a brief summary of your professional background and career objectives..."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Skills (comma separated)</label>
-              <textarea
-                rows={3}
-                value={resumeData.skills}
-                onChange={handleSkillsChange}
-                className="cyber-input"
-                placeholder="e.g. JavaScript, React, Node.js, AWS, Python, SQL, Project Management"
-              />
-            </div>
-          </div>
-        )
-
-      case 2:
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-electric-blue">Work Experience</h2>
-              <button type="button" onClick={addExperience} className="text-sm text-electric-blue hover:text-white">
-                + Add Experience
-              </button>
-            </div>
-
-            {resumeData.experience.map((exp, index) => (
-              <div key={index} className="glass p-4 rounded-lg space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">Experience {index + 1}</h3>
-                  {resumeData.experience.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeExperience(index)}
-                      className="text-red-500 hover:text-red-400 text-sm"
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Job Title</label>
-                    <input
-                      type="text"
-                      value={exp.title}
-                      onChange={(e) => handleExperienceChange(index, "title", e.target.value)}
-                      className="cyber-input"
-                      placeholder="e.g. Software Engineer"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Company</label>
-                    <input
-                      type="text"
-                      value={exp.company}
-                      onChange={(e) => handleExperienceChange(index, "company", e.target.value)}
-                      className="cyber-input"
-                      placeholder="e.g. Tech Solutions Inc."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Location</label>
-                    <input
-                      type="text"
-                      value={exp.location}
-                      onChange={(e) => handleExperienceChange(index, "location", e.target.value)}
-                      className="cyber-input"
-                      placeholder="e.g. San Francisco, CA"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1">Start Date</label>
-                      <input
-                        type="month"
-                        value={exp.startDate}
-                        onChange={(e) => handleExperienceChange(index, "startDate", e.target.value)}
-                        className="cyber-input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1">End Date</label>
-                      <input
-                        type="month"
-                        value={exp.endDate}
-                        onChange={(e) => handleExperienceChange(index, "endDate", e.target.value)}
-                        className="cyber-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
-                    <textarea
-                      rows={4}
-                      value={exp.description}
-                      onChange={(e) => handleExperienceChange(index, "description", e.target.value)}
-                      className="cyber-input"
-                      placeholder="Describe your responsibilities and achievements..."
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )
-
-      case 3:
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-electric-blue">Education</h2>
-              <button type="button" onClick={addEducation} className="text-sm text-electric-blue hover:text-white">
-                + Add Education
-              </button>
-            </div>
-
-            {resumeData.education.map((edu, index) => (
-              <div key={index} className="glass p-4 rounded-lg space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">Education {index + 1}</h3>
-                  {resumeData.education.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeEducation(index)}
-                      className="text-red-500 hover:text-red-400 text-sm"
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Degree</label>
-                    <input
-                      type="text"
-                      value={edu.degree}
-                      onChange={(e) => handleEducationChange(index, "degree", e.target.value)}
-                      className="cyber-input"
-                      placeholder="e.g. Bachelor of Science in Computer Science"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Institution</label>
-                    <input
-                      type="text"
-                      value={edu.institution}
-                      onChange={(e) => handleEducationChange(index, "institution", e.target.value)}
-                      className="cyber-input"
-                      placeholder="e.g. Stanford University"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Location</label>
-                    <input
-                      type="text"
-                      value={edu.location}
-                      onChange={(e) => handleEducationChange(index, "location", e.target.value)}
-                      className="cyber-input"
-                      placeholder="e.g. Stanford, CA"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1">Start Date</label>
-                      <input
-                        type="month"
-                        value={edu.startDate}
-                        onChange={(e) => handleEducationChange(index, "startDate", e.target.value)}
-                        className="cyber-input"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1">End Date</label>
-                      <input
-                        type="month"
-                        value={edu.endDate}
-                        onChange={(e) => handleEducationChange(index, "endDate", e.target.value)}
-                        className="cyber-input"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )
-
-      case 4:
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-electric-blue">Projects</h2>
-              <button type="button" onClick={addProject} className="text-sm text-electric-blue hover:text-white">
-                + Add Project
-              </button>
-            </div>
-
-            {resumeData.projects.map((project, index) => (
-              <div key={index} className="glass p-4 rounded-lg space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">Project {index + 1}</h3>
-                  {resumeData.projects.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeProject(index)}
-                      className="text-red-500 hover:text-red-400 text-sm"
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Project Name</label>
-                    <input
-                      type="text"
-                      value={project.name}
-                      onChange={(e) => handleProjectChange(index, "name", e.target.value)}
-                      className="cyber-input"
-                      placeholder="e.g. E-commerce Platform"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
-                    <textarea
-                      rows={3}
-                      value={project.description}
-                      onChange={(e) => handleProjectChange(index, "description", e.target.value)}
-                      className="cyber-input"
-                      placeholder="Describe the project and your role..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Technologies Used</label>
-                    <input
-                      type="text"
-                      value={project.technologies}
-                      onChange={(e) => handleProjectChange(index, "technologies", e.target.value)}
-                      className="cyber-input"
-                      placeholder="e.g. React, Node.js, MongoDB, AWS"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )
-
-      default:
-        return null
-    }
-  }
-
-  // Render resume preview
-  const renderPreview = () => {
-    return (
-      <div className="glass-card">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-electric-blue">Resume Preview</h2>
-          <div className="flex space-x-2">
-            <button onClick={() => setPreview(false)} className="cyber-button-secondary">
-              Edit
-            </button>
-            <button onClick={handleDownload} className="cyber-button flex items-center">
-              <Download className="mr-2 h-4 w-4" />
-              Download PDF
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white text-black p-8 rounded-lg shadow-lg">
-          {/* Header */}
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold">{resumeData.personalInfo.name}</h1>
-            <div className="flex flex-wrap justify-center gap-x-4 text-sm mt-2">
-              <span>{resumeData.personalInfo.email}</span>
-              <span>{resumeData.personalInfo.phone}</span>
-              <span>{resumeData.personalInfo.location}</span>
-              {resumeData.personalInfo.linkedin && <span>{resumeData.personalInfo.linkedin}</span>}
-            </div>
-          </div>
-
-          {/* Objective */}
-          {resumeData.objective && (
-            <div className="mb-6">
-              <h2 className="text-lg font-bold border-b border-gray-300 pb-1 mb-2">Professional Summary</h2>
-              <p className="text-sm">{resumeData.objective}</p>
-            </div>
-          )}
-
-          {/* Skills */}
-          {resumeData.skills && (
-            <div className="mb-6">
-              <h2 className="text-lg font-bold border-b border-gray-300 pb-1 mb-2">Skills</h2>
-              <p className="text-sm">{resumeData.skills}</p>
-            </div>
-          )}
-
-          {/* Experience */}
-          {resumeData.experience.length > 0 && resumeData.experience[0].title && (
-            <div className="mb-6">
-              <h2 className="text-lg font-bold border-b border-gray-300 pb-1 mb-2">Experience</h2>
-              {resumeData.experience.map((exp, index) => (
-                <div key={index} className="mb-4">
-                  <div className="flex justify-between">
-                    <h3 className="font-bold">{exp.title}</h3>
-                    <span className="text-sm">
-                      {exp.startDate &&
-                        new Date(exp.startDate).toLocaleDateString("en-US", { year: "numeric", month: "short" })}{" "}
-                      -
-                      {exp.endDate === "Present"
-                        ? " Present"
-                        : exp.endDate &&
-                          new Date(exp.endDate).toLocaleDateString("en-US", { year: "numeric", month: "short" })}
-                    </span>
-                  </div>
-                  <p className="text-sm font-medium">
-                    {exp.company}, {exp.location}
-                  </p>
-                  <p className="text-sm whitespace-pre-line mt-1">{exp.description}</p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Education */}
-          {resumeData.education.length > 0 && resumeData.education[0].degree && (
-            <div className="mb-6">
-              <h2 className="text-lg font-bold border-b border-gray-300 pb-1 mb-2">Education</h2>
-              {resumeData.education.map((edu, index) => (
-                <div key={index} className="mb-2">
-                  <div className="flex justify-between">
-                    <h3 className="font-bold">{edu.degree}</h3>
-                    <span className="text-sm">
-                      {edu.startDate &&
-                        new Date(edu.startDate).toLocaleDateString("en-US", { year: "numeric", month: "short" })}{" "}
-                      -
-                      {edu.endDate &&
-                        new Date(edu.endDate).toLocaleDateString("en-US", { year: "numeric", month: "short" })}
-                    </span>
-                  </div>
-                  <p className="text-sm">
-                    {edu.institution}, {edu.location}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Projects */}
-          {resumeData.projects.length > 0 && resumeData.projects[0].name && (
-            <div>
-              <h2 className="text-lg font-bold border-b border-gray-300 pb-1 mb-2">Projects</h2>
-              {resumeData.projects.map((project, index) => (
-                <div key={index} className="mb-2">
-                  <h3 className="font-bold">{project.name}</h3>
-                  <p className="text-sm mt-1">{project.description}</p>
-                  <p className="text-sm italic mt-1">Technologies: {project.technologies}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  const [hasEnoughTokens, setHasEnoughTokens] = useState(true)
-
-  // Handle AI generation
-  const handleAiGenerate = async () => {
-    // Check if user has enough tokens
-    if (!useTokens(2, "Resume Generation")) {
-      setHasEnoughTokens(false)
-      return
-    }
-    setHasEnoughTokens(true)
-
-    try {
-      setGenerating(true)
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2500))
-
-      // Mock AI-generated resume data
-      const aiGeneratedData = {
-        personalInfo: {
-          name: resumeData.personalInfo.name || "John Doe",
-          email: resumeData.personalInfo.email || "john.doe@example.com",
-          phone: resumeData.personalInfo.phone || "(123) 456-7890",
-          location: resumeData.personalInfo.location || "San Francisco, CA",
-          linkedin: resumeData.personalInfo.linkedin || "linkedin.com/in/johndoe",
-        },
-        objective:
-          resumeData.objective ||
-          "Dedicated and innovative software engineer with a passion for creating efficient, scalable solutions. Seeking to leverage my technical expertise and problem-solving skills in a challenging role that allows for professional growth and the opportunity to contribute to impactful projects.",
-        skills:
-          resumeData.skills ||
-          "JavaScript, TypeScript, React, Node.js, Express, MongoDB, AWS, Docker, Kubernetes, CI/CD, Git, Agile Methodologies, Python, SQL, NoSQL, REST APIs, GraphQL, Redux, Jest, Cypress",
-        experience: [
-          {
-            title: "Senior Software Engineer",
-            company: "Tech Solutions Inc.",
-            location: "San Francisco, CA",
-            startDate: "2020-01",
-            endDate: "Present",
-            description:
-              "• Led a team of 5 engineers to develop a microservices architecture\n• Reduced API response time by 40% through optimization techniques\n• Implemented CI/CD pipelines using GitHub Actions and AWS\n• Mentored junior developers and conducted code reviews\n• Collaborated with product managers to define and prioritize features",
-          },
-          {
-            title: "Software Engineer",
-            company: "WebDev Co.",
-            location: "San Francisco, CA",
-            startDate: "2018-03",
-            endDate: "2019-12",
-            description:
-              "• Developed responsive web applications using React and Redux\n• Collaborated with UX designers to implement user-friendly interfaces\n• Participated in code reviews and mentored junior developers\n• Optimized database queries resulting in 30% faster page loads\n• Implemented automated testing using Jest and Cypress",
-          },
-        ],
-        education: [
-          {
-            degree: "Master of Science in Computer Science",
-            institution: "Stanford University",
-            location: "Stanford, CA",
-            startDate: "2016-09",
-            endDate: "2018-06",
-          },
-          {
-            degree: "Bachelor of Science in Computer Engineering",
-            institution: "University of California, Berkeley",
-            location: "Berkeley, CA",
-            startDate: "2012-09",
-            endDate: "2016-05",
-          },
-        ],
-        projects: [
-          {
-            name: "E-commerce Platform",
-            description: "Developed a full-stack e-commerce platform with React, Node.js, and MongoDB",
-            technologies: "React, Node.js, Express, MongoDB, Redux, Stripe API, AWS S3",
-          },
-          {
-            name: "Task Management System",
-            description: "Built a collaborative task management system with real-time updates",
-            technologies: "React, Firebase, Material-UI, Redux, Jest",
-          },
-        ],
-      }
-
-      setResumeData(aiGeneratedData)
-      showNotification("Resume generated successfully", "success")
-      setPreview(true)
-    } catch (error) {
-      showNotification("Failed to generate resume", "error")
-    } finally {
-      setGenerating(false)
-    }
-  }
+  const tabs = [
+    { id: "personal", label: "Personal Info" },
+    { id: "summary", label: "Summary" },
+    { id: "experience", label: "Experience" },
+    { id: "education", label: "Education" },
+    { id: "skills", label: "Skills" },
+  ]
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold mb-2">AI Resume Builder</h1>
-          <p className="text-gray-300">Create a professional resume with AI assistance</p>
-        </div>
+    <DashboardLayout title="AI Resume Builder">
+      <div className="max-w-4xl mx-auto">
+        <div className="glassmorphism rounded-xl p-6 mb-6">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h2 className="text-xl font-bold">Create Your Resume</h2>
+              <p className="text-gray-300 mt-1">
+                Build a professional, ATS-optimized resume with our AI-powered tools.
+              </p>
+            </div>
+            <div className="bg-primary/20 px-4 py-2 rounded-lg">
+              <p className="text-sm">
+                Available credits: <span className="font-bold">{credits}</span>
+              </p>
+            </div>
+          </div>
 
-        <TokenDisplay />
-      </div>
-
-      {preview ? (
-        renderPreview()
-      ) : (
-        <div className="glass-card">
-          {/* Progress steps */}
-          <div className="flex justify-between mb-8">
-            {[1, 2, 3, 4].map((stepNumber) => (
-              <div
-                key={stepNumber}
-                className={`flex flex-col items-center ${stepNumber < step ? "text-electric-blue" : stepNumber === step ? "text-neon-pink" : "text-gray-500"}`}
+          {/* Tabs */}
+          <div className="flex overflow-x-auto space-x-2 mb-6 pb-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2 rounded-md whitespace-nowrap ${
+                  activeTab === tab.id ? "bg-primary text-white" : "bg-secondary hover:bg-secondary/80"
+                }`}
               >
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 ${
-                    stepNumber < step
-                      ? "bg-electric-blue text-cyber-black"
-                      : stepNumber === step
-                        ? "bg-neon-pink text-white"
-                        : "bg-cyber-gray text-gray-400"
-                  }`}
-                >
-                  {stepNumber}
-                </div>
-                <span className="text-xs hidden md:block">
-                  {stepNumber === 1
-                    ? "Basic Info"
-                    : stepNumber === 2
-                      ? "Experience"
-                      : stepNumber === 3
-                        ? "Education"
-                        : "Projects"}
-                </span>
-              </div>
+                {tab.label}
+              </button>
             ))}
           </div>
 
-          {/* Form */}
-          <form>
-            {renderForm()}
-
-            {/* Navigation buttons */}
-            <div className="flex justify-between mt-8">
-              {step > 1 ? (
-                <button type="button" onClick={handlePrevStep} className="cyber-button-secondary flex items-center">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Previous
-                </button>
-              ) : (
-                <div></div>
-              )}
-
-              {step < 4 ? (
-                <button type="button" onClick={handleNextStep} className="cyber-button flex items-center">
-                  Next
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleAiGenerate}
-                  className={`cyber-button flex items-center ${generating ? "opacity-50 cursor-not-allowed" : ""}`}
-                  disabled={generating}
-                >
-                  {generating ? (
-                    <>Generating...</>
-                  ) : (
-                    <>
-                      <PenTool className="mr-2 h-4 w-4" />
-                      Generate Resume
-                    </>
-                  )}
-                </button>
-              )}
+          {/* Error message */}
+          {error && (
+            <div className="mb-6 p-3 bg-destructive/20 border border-destructive/50 rounded-md flex items-start">
+              <AlertCircle className="h-5 w-5 text-destructive mr-2 flex-shrink-0 mt-0.5" />
+              <p>{error}</p>
             </div>
-          </form>
+          )}
+
+          {/* Tab content */}
+          <div className="mb-6">
+            {activeTab === "personal" && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium mb-1">
+                      Full Name
+                    </label>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      value={resumeData.personal.name}
+                      onChange={handlePersonalChange}
+                      className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium mb-1">
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={resumeData.personal.email}
+                      onChange={handlePersonalChange}
+                      className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="john.doe@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium mb-1">
+                      Phone
+                    </label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={resumeData.personal.phone}
+                      onChange={handlePersonalChange}
+                      className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="(123) 456-7890"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="address" className="block text-sm font-medium mb-1">
+                      Address
+                    </label>
+                    <input
+                      id="address"
+                      name="address"
+                      type="text"
+                      value={resumeData.personal.address}
+                      onChange={handlePersonalChange}
+                      className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="City, State"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="linkedin" className="block text-sm font-medium mb-1">
+                      LinkedIn
+                    </label>
+                    <input
+                      id="linkedin"
+                      name="linkedin"
+                      type="text"
+                      value={resumeData.personal.linkedin}
+                      onChange={handlePersonalChange}
+                      className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="linkedin.com/in/johndoe"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="website" className="block text-sm font-medium mb-1">
+                      Website
+                    </label>
+                    <input
+                      id="website"
+                      name="website"
+                      type="text"
+                      value={resumeData.personal.website}
+                      onChange={handlePersonalChange}
+                      className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="johndoe.com"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "summary" && (
+              <div>
+                <label htmlFor="summary" className="block text-sm font-medium mb-1">
+                  Professional Summary
+                </label>
+                <textarea
+                  id="summary"
+                  value={resumeData.summary}
+                  onChange={handleSummaryChange}
+                  rows={6}
+                  className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Write a brief summary of your professional background and key qualifications..."
+                ></textarea>
+                <div className="mt-2 flex justify-end">
+                  <button className="text-primary hover:text-primary/80 text-sm">Generate with AI</button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "experience" && (
+              <div className="space-y-6">
+                {resumeData.experience.map((exp, index) => (
+                  <div key={index} className="p-4 bg-secondary/50 rounded-lg">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-medium">Experience {index + 1}</h3>
+                      {resumeData.experience.length > 1 && (
+                        <button
+                          onClick={() => removeExperience(index)}
+                          className="text-destructive hover:text-destructive/80"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Job Title</label>
+                        <input
+                          type="text"
+                          value={exp.title}
+                          onChange={(e) => handleExperienceChange(index, "title", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="Software Engineer"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Company</label>
+                        <input
+                          type="text"
+                          value={exp.company}
+                          onChange={(e) => handleExperienceChange(index, "company", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="Tech Innovations Inc."
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Location</label>
+                        <input
+                          type="text"
+                          value={exp.location}
+                          onChange={(e) => handleExperienceChange(index, "location", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="New York, NY"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Start Date</label>
+                        <input
+                          type="date"
+                          value={exp.startDate}
+                          onChange={(e) => handleExperienceChange(index, "startDate", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">End Date</label>
+                        <input
+                          type="date"
+                          value={exp.endDate}
+                          onChange={(e) => handleExperienceChange(index, "endDate", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Current Job</label>
+                        <input
+                          type="checkbox"
+                          checked={exp.current}
+                          onChange={(e) => handleExperienceChange(index, "current", e.target.checked)}
+                          className="form-checkbox h-4 w-4 text-primary focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Description</label>
+                        <textarea
+                          rows={4}
+                          value={exp.description}
+                          onChange={(e) => handleExperienceChange(index, "description", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="Describe your responsibilities and achievements..."
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <button
+                  onClick={addExperience}
+                  className="flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/80"
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Add Experience
+                </button>
+              </div>
+            )}
+
+            {activeTab === "education" && (
+              <div className="space-y-6">
+                {resumeData.education.map((edu, index) => (
+                  <div key={index} className="p-4 bg-secondary/50 rounded-lg">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-medium">Education {index + 1}</h3>
+                      {resumeData.education.length > 1 && (
+                        <button
+                          onClick={() => removeEducation(index)}
+                          className="text-destructive hover:text-destructive/80"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Degree</label>
+                        <input
+                          type="text"
+                          value={edu.degree}
+                          onChange={(e) => handleEducationChange(index, "degree", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="Bachelor of Science"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Institution</label>
+                        <input
+                          type="text"
+                          value={edu.institution}
+                          onChange={(e) => handleEducationChange(index, "institution", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="State University"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Location</label>
+                        <input
+                          type="text"
+                          value={edu.location}
+                          onChange={(e) => handleEducationChange(index, "location", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="City, State"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Start Date</label>
+                        <input
+                          type="date"
+                          value={edu.startDate}
+                          onChange={(e) => handleEducationChange(index, "startDate", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">End Date</label>
+                        <input
+                          type="date"
+                          value={edu.endDate}
+                          onChange={(e) => handleEducationChange(index, "endDate", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Description</label>
+                        <textarea
+                          rows={4}
+                          value={edu.description}
+                          onChange={(e) => handleEducationChange(index, "description", e.target.value)}
+                          className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="Describe your coursework and achievements..."
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <button
+                  onClick={addEducation}
+                  className="flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/80"
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Add Education
+                </button>
+              </div>
+            )}
+
+            {activeTab === "skills" && (
+              <div className="space-y-4">
+                {resumeData.skills.map((skill, index) => (
+                  <div key={index} className="flex items-center">
+                    <input
+                      type="text"
+                      value={skill}
+                      onChange={(e) => handleSkillChange(index, e.target.value)}
+                      className="w-full px-3 py-2 bg-secondary border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Skill Name"
+                    />
+                    {resumeData.skills.length > 1 && (
+                      <button
+                        onClick={() => removeSkill(index)}
+                        className="ml-2 text-destructive hover:text-destructive/80"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  onClick={addSkill}
+                  className="flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/80"
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Add Skill
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Generate Resume Button */}
+          <div className="flex justify-end">
+            <button
+              onClick={handleGenerateResume}
+              className="flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/80"
+              disabled={loading}
+            >
+              {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Download className="h-5 w-5 mr-2" />}
+              Generate Resume
+            </button>
+          </div>
         </div>
-      )}
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }
 

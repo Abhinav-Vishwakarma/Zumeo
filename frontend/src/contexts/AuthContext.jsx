@@ -1,138 +1,121 @@
 "use client"
 
-import { createContext, useState, useContext, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { useNotification } from "./NotificationContext"
+import { createContext, useContext, useState, useEffect } from "react"
+import { api } from "../services/api"
 
 const AuthContext = createContext()
 
-export const useAuth = () => useContext(AuthContext)
-
-export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null)
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-  const navigate = useNavigate()
-  const { showNotification } = useNotification()
+  const [credits, setCredits] = useState(0)
 
-  // Check if user is logged in on initial load
   useEffect(() => {
-    const user = localStorage.getItem("user")
-    if (user) {
-      setCurrentUser(JSON.parse(user))
+    // Check if user is already logged in
+    const token = localStorage.getItem("token")
+    if (token) {
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`
+      fetchUserData()
+    } else {
+      setLoading(false)
     }
-    setLoading(false)
   }, [])
 
-  // Fix the login function to prevent duplicate notifications
+  const fetchUserData = async () => {
+    try {
+      // Fetch user credits
+      const response = await api.get("/credits")
+      setCredits(response.data.credits)
+      setUser(JSON.parse(localStorage.getItem("user")))
+    } catch (error) {
+      console.error("Error fetching user data:", error)
+      logout() // Token might be expired or invalid
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const login = async (email, password) => {
     try {
-      setLoading(true)
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const response = await api.post("/login", { email, password })
+      const { access_token, token_type } = response.data
 
-      // Mock validation
-      if (email === "demo@example.com" && password === "password") {
-        const user = {
-          id: "1",
-          name: "Demo User",
-          email: "demo@example.com",
-          avatar: "https://i.pravatar.cc/150?u=demo@example.com",
-          role: "user",
-          createdAt: new Date().toISOString(),
-        }
+      // Store token in localStorage
+      localStorage.setItem("token", access_token)
 
-        setCurrentUser(user)
-        localStorage.setItem("user", JSON.stringify(user))
-        showNotification("Login successful", "success")
-        // Don't navigate here, let the component handle navigation
-        return user
-      } else {
-        throw new Error("Invalid email or password")
-      }
+      // Set token in axios headers for future requests
+      api.defaults.headers.common["Authorization"] = `Bearer ${access_token}`
+
+      // For simplicity, we'll store basic user info
+      const userInfo = { email }
+      localStorage.setItem("user", JSON.stringify(userInfo))
+      setUser(userInfo)
+
+      // Fetch user credits
+      await fetchUserData()
+
+      return { success: true }
     } catch (error) {
-      showNotification(error.message, "error")
-      throw error
-    } finally {
-      setLoading(false)
+      console.error("Login error:", error)
+      return {
+        success: false,
+        message: error.response?.data?.detail || "Login failed. Please try again.",
+      }
     }
   }
 
-  // Fix the Google OAuth login function
-  const googleLogin = async () => {
+  const register = async (username, email, password) => {
     try {
-      setLoading(true)
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      const user = {
-        id: "2",
-        name: "Google User",
-        email: "google@example.com",
-        avatar: "https://i.pravatar.cc/150?u=google@example.com",
-        role: "user",
-        createdAt: new Date().toISOString(),
-      }
-
-      setCurrentUser(user)
-      localStorage.setItem("user", JSON.stringify(user))
-      showNotification("Google login successful", "success")
-      // Don't navigate here, let the component handle navigation
-      return user
+      const response = await api.post("/register", { username, email, password })
+      return { success: true }
     } catch (error) {
-      showNotification("Google login failed", "error")
-      throw error
-    } finally {
-      setLoading(false)
+      console.error("Registration error:", error)
+      return {
+        success: false,
+        message: error.response?.data?.detail || "Registration failed. Please try again.",
+      }
     }
   }
 
-  // Fix the register function
-  const register = async (name, email, password) => {
-    try {
-      setLoading(true)
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      const user = {
-        id: "3",
-        name,
-        email,
-        avatar: `https://i.pravatar.cc/150?u=${email}`,
-        role: "user",
-        createdAt: new Date().toISOString(),
-      }
-
-      setCurrentUser(user)
-      localStorage.setItem("user", JSON.stringify(user))
-      showNotification("Registration successful", "success")
-      // Don't navigate here, let the component handle navigation
-      return user
-    } catch (error) {
-      showNotification("Registration failed", "error")
-      throw error
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Update the logout function to also clear the welcomeShown flag
-  // Logout function
   const logout = () => {
-    setCurrentUser(null)
+    localStorage.removeItem("token")
     localStorage.removeItem("user")
-    localStorage.removeItem("welcomeShown") // Clear the welcome flag on logout
-    showNotification("Logged out successfully", "info")
-    navigate("/")
+    delete api.defaults.headers.common["Authorization"]
+    setUser(null)
+    setCredits(0)
   }
 
-  const value = {
-    currentUser,
-    login,
-    googleLogin,
-    register,
-    logout,
-    loading,
+  const updateCredits = async () => {
+    try {
+      const response = await api.get("/credits")
+      setCredits(response.data.credits)
+    } catch (error) {
+      console.error("Error fetching credits:", error)
+    }
   }
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        loading,
+        login,
+        register,
+        logout,
+        credits,
+        updateCredits,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider")
+  }
+  return context
 }

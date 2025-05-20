@@ -254,8 +254,8 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-bold mb-3">Business Connect</h3>
               <p className="text-gray-300 mb-4">
-                Connect with recruiters and businesses looking for talent. Find job opportunities that match with your skills
-                and career aspirations.
+                Connect with recruiters and businesses looking for talent. Find job opportunities that match with your
+                skills and career aspirations.
               </p>
               <Link to="/register" className="text-accent hover:text-white flex items-center text-sm">
                 Learn more <ArrowRight className="ml-1 h-4 w-4" />
@@ -441,7 +441,7 @@ const LandingPage = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Users Say</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Thousands of professionals have advanced their careers with ResumeAI
+              Thousands of professionals have advanced their careers with Zumeo
             </p>
           </div>
 
@@ -449,7 +449,7 @@ const LandingPage = () => {
             <div className="glassmorphism rounded-xl p-6">
               <div className="flex items-center mb-4">
                 <div className="h-12 w-12 rounded-full overflow-hidden">
-                  <img src="https://i.pravatar.cc/150?u=user1" alt="User" className="h-full w-full object-cover" />
+                  <img src="/placeholder.svg?height=150&width=150" alt="User" className="h-full w-full object-cover" />
                 </div>
                 <div className="ml-4">
                   <h4 className="font-bold">Sarah Johnson</h4>
@@ -465,7 +465,7 @@ const LandingPage = () => {
             <div className="glassmorphism rounded-xl p-6">
               <div className="flex items-center mb-4">
                 <div className="h-12 w-12 rounded-full overflow-hidden">
-                  <img src="https://i.pravatar.cc/150?u=user2" alt="User" className="h-full w-full object-cover" />
+                  <img src="/placeholder.svg?height=150&width=150" alt="User" className="h-full w-full object-cover" />
                 </div>
                 <div className="ml-4">
                   <h4 className="font-bold">Michael Chen</h4>
@@ -473,15 +473,15 @@ const LandingPage = () => {
                 </div>
               </div>
               <p className="text-gray-300">
-                "The Zumeo - AI Resume Builder saved me hours of work. It generated a professional resume that highlighted my
-                skills perfectly. I landed my dream job within a month!"
+                "The Zumeo - AI Resume Builder saved me hours of work. It generated a professional resume that
+                highlighted my skills perfectly. I landed my dream job within a month!"
               </p>
             </div>
 
             <div className="glassmorphism rounded-xl p-6">
               <div className="flex items-center mb-4">
                 <div className="h-12 w-12 rounded-full overflow-hidden">
-                  <img src="https://i.pravatar.cc/150?u=user3" alt="User" className="h-full w-full object-cover" />
+                  <img src="/placeholder.svg?height=150&width=150" alt="User" className="h-full w-full object-cover" />
                 </div>
                 <div className="ml-4">
                   <h4 className="font-bold">Emily Rodriguez</h4>
@@ -534,9 +534,9 @@ const LandingPage = () => {
             <div className="glassmorphism rounded-xl p-6">
               <h3 className="text-xl font-bold mb-2">How accurate is the Zumeo?</h3>
               <p className="text-gray-300">
-                Our Zumeo uses advanced machine learning algorithms trained on millions of successful
-                resumes. While it provides high-quality content, we recommend reviewing and personalizing the generated
-                content to ensure it accurately represents your experience and skills.
+                Our Zumeo uses advanced machine learning algorithms trained on millions of successful resumes. While it
+                provides high-quality content, we recommend reviewing and personalizing the generated content to ensure
+                it accurately represents your experience and skills.
               </p>
             </div>
           </div>

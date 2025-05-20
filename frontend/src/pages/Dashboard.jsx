@@ -2,237 +2,115 @@
 
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { FileText, CheckCircle, GitBranch, Briefcase, AlertTriangle, PenTool, Award, ArrowRight } from "lucide-react"
+import { FileText, CheckCircle, GitBranch, ArrowRight } from "lucide-react"
+import DashboardLayout from "../components/DashboardLayout"
 import { useAuth } from "../contexts/AuthContext"
-import { useToken } from "../contexts/TokenContext"
-import FeatureCard from "../components/ui/FeatureCard"
-import StatsCard from "../components/ui/StatsCard"
-import TokenDisplay from "../components/ui/TokenDisplay"
 
 const Dashboard = () => {
-  const { currentUser } = useAuth()
-  const { tokens } = useToken()
-  const [stats, setStats] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { user, credits } = useAuth()
+  const [greeting, setGreeting] = useState("")
 
-  // Mock data fetching
   useEffect(() => {
-    const fetchStats = async () => {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      setStats({
-        resumesAnalyzed: 12,
-        resumesCreated: 5,
-        roadmapsGenerated: 3,
-        leetcodeProblems: 47,
-      })
-
-      setLoading(false)
+    // Set greeting based on time of day
+    const hour = new Date().getHours()
+    if (hour < 12) {
+      setGreeting("Good morning")
+    } else if (hour < 18) {
+      setGreeting("Good afternoon")
+    } else {
+      setGreeting("Good evening")
     }
-
-    fetchStats()
   }, [])
 
   const features = [
     {
       title: "Resume Extractor",
-      description: "Extract key information from your resume automatically",
-      icon: FileText,
+      description: "Extract key information from your existing resume automatically.",
+      icon: <FileText className="h-6 w-6 text-primary" />,
       path: "/resume-extractor",
-      tokenCost: 1,
+      bgColor: "bg-primary/20",
+      iconColor: "text-primary",
     },
     {
       title: "AI Resume Builder",
-      description: "Generate professional resumes with AI assistance",
-      icon: PenTool,
+      description: "Create professional, ATS-optimized resumes with AI assistance.",
+      icon: <FileText className="h-6 w-6 text-secondary" />,
       path: "/resume-builder",
-      tokenCost: 2,
+      bgColor: "bg-secondary/20",
+      iconColor: "text-secondary",
     },
     {
       title: "Resume Checker",
-      description: "Check your resume against ATS systems and get feedback",
-      icon: CheckCircle,
+      description: "Check your resume against ATS systems and get detailed feedback.",
+      icon: <CheckCircle className="h-6 w-6 text-accent" />,
       path: "/resume-checker",
-      tokenCost: 1,
+      bgColor: "bg-accent/20",
+      iconColor: "text-accent",
     },
     {
       title: "Roadmap Generator",
-      description: "Create personalized career roadmaps based on your goals",
-      icon: GitBranch,
+      description: "Create personalized career roadmaps based on your goals.",
+      icon: <GitBranch className="h-6 w-6 text-primary" />,
       path: "/roadmap-generator",
-      tokenCost: 3,
-    },
-    {
-      title: "Business Connect",
-      description: "Connect with recruiters and businesses looking for talent",
-      icon: Briefcase,
-      path: "/business-connect",
-      tokenCost: 2,
-    },
-    {
-      title: "Fake Resume Detector",
-      description: "Detect fake or exaggerated claims in resumes",
-      icon: AlertTriangle,
-      path: "/fake-detector",
-      tokenCost: 2,
-      disabled: false,
+      bgColor: "bg-primary/20",
+      iconColor: "text-primary",
     },
   ]
 
   return (
-    <div className="space-y-8">
+    <DashboardLayout>
       {/* Welcome section */}
-      <div className="glass-card">
-        <div className="flex flex-col md:flex-row md:items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold mb-2">
-              Welcome back, <span className="text-gradient">{currentUser?.name}</span>
-            </h1>
-            <p className="text-gray-300">Continue enhancing your career journey with our AI-powered tools</p>
+      <div className="glassmorphism rounded-xl p-6 mb-8">
+        <h1 className="text-2xl font-bold mb-2">
+          {greeting}, {user?.email?.split("@")[0] || "User"}!
+        </h1>
+        <p className="text-gray-300">Welcome to your Zumeo dashboard. What would you like to do today?</p>
+
+        <div className="mt-4 flex items-center">
+          <div className="flex items-center mr-6">
+            <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center text-white font-bold mr-2">
+              <span>{credits}</span>
+            </div>
+            <span className="text-sm">Credits available</span>
           </div>
 
-          <TokenDisplay showBuyButton={true} />
-        </div>
-      </div>
-
-      {/* Stats section */}
-      <div>
-        <h2 className="text-xl font-bold mb-4">Your Statics</h2>
-
-        {loading ? (
-          <div className="dashboard-grid">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="glass-card animate-pulse">
-                <div className="h-5 w-24 bg-cyber-gray rounded mb-4"></div>
-                <div className="h-8 w-16 bg-cyber-gray rounded"></div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="dashboard-grid">
-            <StatsCard
-              title="Resumes Analyzed"
-              value={stats.resumesAnalyzed}
-              icon={FileText}
-              change="25%"
-              changeType="increase"
-            />
-            <StatsCard
-              title="Resumes Created"
-              value={stats.resumesCreated}
-              icon={PenTool}
-              change="10%"
-              changeType="increase"
-            />
-            <StatsCard title="Roadmaps Generated" value={stats.roadmapsGenerated} icon={GitBranch} />
-            <StatsCard
-              title="LeetCode Problems"
-              value={stats.leetcodeProblems}
-              icon={Award}
-              change="5"
-              changeType="increase"
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Recent activity */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold">Recent Activity</h2>
-          <Link to="/profile" className="text-electric-blue hover:text-white text-sm flex items-center">
-            View All <ArrowRight className="ml-1 h-4 w-4" />
+          <Link to="/profile" className="text-primary hover:text-primary/80 text-sm flex items-center">
+            View profile <ArrowRight className="ml-1 h-4 w-4" />
           </Link>
         </div>
-
-        <div className="glass-card">
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center animate-pulse">
-                  <div className="h-10 w-10 rounded-full bg-cyber-gray"></div>
-                  <div className="ml-4 space-y-2 flex-1">
-                    <div className="h-4 bg-cyber-gray rounded w-3/4"></div>
-                    <div className="h-3 bg-cyber-gray rounded w-1/4"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <div className="p-2 rounded-full bg-cyber-gray text-neon-pink">
-                  <FileText className="h-5 w-5" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-white">Resume analyzed: "Senior Software Engineer.pdf"</p>
-                  <p className="text-xs text-gray-400">2 hours ago</p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="p-2 rounded-full bg-cyber-gray text-electric-blue">
-                  <GitBranch className="h-5 w-5" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-white">Roadmap generated: "Full Stack Developer Path"</p>
-                  <p className="text-xs text-gray-400">Yesterday</p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="p-2 rounded-full bg-cyber-gray text-neon-purple">
-                  <PenTool className="h-5 w-5" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-white">Resume created: "Frontend Developer.pdf"</p>
-                  <p className="text-xs text-gray-400">3 days ago</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
 
-      {/* AI Tools section */}
-      <div>
-        <h2 className="text-xl font-bold mb-4">AI Tools</h2>
-
-        <div className="dashboard-grid">
-          {features.map((feature) => (
-            <FeatureCard
-              key={feature.title}
-              icon={feature.icon}
-              title={feature.title}
-              description={feature.description}
-              path={feature.path}
-              tokenCost={feature.tokenCost}
-              disabled={feature.disabled}
-            />
-          ))}
-        </div>
+      {/* Features grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {features.map((feature) => (
+          <Link
+            key={feature.title}
+            to={feature.path}
+            className="glassmorphism rounded-xl p-6 transition-transform hover:scale-105"
+          >
+            <div className={`h-12 w-12 rounded-lg ${feature.bgColor} flex items-center justify-center mb-4`}>
+              {feature.icon}
+            </div>
+            <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
+            <p className="text-gray-300 mb-4">{feature.description}</p>
+            <div className="text-accent hover:text-white flex items-center text-sm">
+              Get started <ArrowRight className="ml-1 h-4 w-4" />
+            </div>
+          </Link>
+        ))}
       </div>
 
-      {/* Token section */}
-      {tokens < 5 && (
-        <div className="glass-card border border-neon-pink">
-          <div className="flex flex-col md:flex-row md:items-center justify-between">
-            <div>
-              <h3 className="text-lg font-bold mb-2">Running low on tokens?</h3>
-              <p className="text-gray-300 mb-4 md:mb-0">
-                You have {tokens} token{tokens !== 1 ? "s" : ""} remaining. Purchase more to continue using our AI
-                tools.
-              </p>
-            </div>
-
-            <Link to="/subscription" className="cyber-button">
-              Get More Tokens
-            </Link>
+      {/* Recent activity section */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
+        <div className="glassmorphism rounded-xl p-6">
+          <div className="text-center py-8">
+            <p className="text-gray-400">No recent activity yet.</p>
+            <p className="text-gray-400 mt-2">Start using our tools to see your activity here!</p>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }
 
