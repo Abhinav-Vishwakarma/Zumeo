@@ -2,7 +2,7 @@ import axios from "axios"
 
 // Create axios instance with base URL
 export const api = axios.create({
-  baseURL: "https://zumeo-production.up.railway.app" , // Change this to your backend URL
+  baseURL: "https://zumeo-production.up.railway.app", // Ensure this is HTTPS
   headers: {
     "Content-Type": "application/json",
   },
@@ -32,6 +32,7 @@ api.interceptors.response.use(
       // Token expired or invalid
       localStorage.removeItem("token")
       localStorage.removeItem("user")
+      // Redirect to login page
       window.location.href = "/login"
     }
     return Promise.reject(error)
@@ -43,7 +44,7 @@ export const resumeService = {
   uploadResume: (file) => {
     const formData = new FormData()
     formData.append("file", file)
-    return api.post("/upload-resume/", formData, {
+    return api.post("/upload-resume", formData, { // Removed trailing slash
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -70,7 +71,7 @@ export const resumeService = {
 // Roadmap service
 export const roadmapService = {
   generateRoadmap: (roadmapData) => {
-    return api.post("/generate-roadmap/", roadmapData)
+    return api.post("/generate-roadmap", roadmapData) // Removed trailing slash
   },
 
   getRoadmap: (roadmapId) => {
@@ -78,18 +79,18 @@ export const roadmapService = {
   },
 
   listRoadmaps: () => {
-    return api.get("/list-roadmaps/")
+    return api.get("/list-roadmaps") // Removed trailing slash
   },
 }
 
 // Credits service
 export const creditsService = {
   getCredits: () => {
-    return api.get("/credits/")
+    return api.get("/credits") // Removed trailing slash
   },
 
   buyCredits: (amount, transactionDetails) => {
-    return api.post("/buy-credits/", {
+    return api.post("/buy-credits", { // Removed trailing slash
       amount,
       transaction_details: transactionDetails,
     })
